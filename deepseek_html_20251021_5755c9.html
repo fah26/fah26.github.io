@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Baking Book - Homemade Cookies</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: #666;
+            font-size: 1.2em;
+            font-style: italic;
+        }
+
+        .status-banner {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .status-banner.open {
+            background: #c8e6c9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .status-banner.closed {
+            background: #ffcdd2;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card h3 {
+            color: #8b4513;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .product-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .order-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .order-section h2 {
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .closed-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #ff9800;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b6b, #ff9800);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,107,107,0.4);
+        }
+
+        .pickup-info {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2196f3;
+        }
+
+        .pickup-info h4 {
+            color: #1565c0;
+            margin-bottom: 10px;
+        }
+
+        .payment-info {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #4caf50;
+        }
+
+        .payment-info h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .instructions {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 30px;
+            border-left: 5px solid #8b4513;
+            font-size: 0.9em;
+        }
+        
+        .instructions h4 {
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-screen {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .confirmation-screen h2 {
+            color: #4caf50;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍪 The Baking Book</h1>
+            <p class="tagline">Freshly Baked with Love</p>
+        </header>
+
+        <div id="statusBanner" class="status-banner closed">
+            Preorders are currently closed
+        </div>
+
+        <section class="products">
+            <div class="product-card">
+                <h3>Chocolate Chip Cookies</h3>
+                <p>Bite-sized, crunchy, and packed with rich chocolate chips, our Chocolate Chip Cookies are perfect for a sweet snack any time of the day. Sold by weight, these little delights let you enjoy as much (or as little) as you like. Made with real butter, brown sugar, and premium chocolate, they're reminiscent of the classic cookies you love — but homemade, fresh, and irresistibly crunchy.</p>
+                <p><strong>Available in:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>100g pack - $5.50</li>
+                    <li>200g pack - $10</li>
+                </ul>
+            </div>
+
+            <div class="product-card">
+                <h3>Snickerdoodles</h3>
+                <p>Soft, chewy, and buttery, our Snickerdoodles are a comforting classic rolled in cinnamon sugar. Each cookie melts in your mouth with just the right touch of sweetness and spice. Perfect for sharing (or keeping all to yourself!), they're made with real butter, eggs, and a hint of vanilla for that homemade goodness.</p>
+                <p><strong>Available in:</strong></p>
+                <ul style="margin-left: 20px; margin-bottom: 15px;">
+                    <li>Minimum 2 cookies - $3.50</li>
+                    <li>6-cookie pack - $9.50</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="order-section">
+            <div id="closedMessage" class="closed-message">
+                <h2>Preorders are currently closed</h2>
+                <p>Check back soon for our next preorder window!</p>
+            </div>
+
+            <div id="orderForm" class="hidden">
+                <h2>Place Your Preorder</h2>
+                
+                <div class="pickup-info">
+                    <h4>📍 Pickup Information</h4>
+                    <p><strong>When:</strong> Saturday Morning to Afternoon</p>
+                    <p><strong>Note:</strong> Pickup only - exact time will be confirmed after payment</p>
+                </div>
+
+                <div class="payment-info">
+                    <h4>💳 Payment Information</h4>
+                    <p><strong>Payment Method:</strong> PayNow Only</p>
+                    <p><strong>PayNow UEN:</strong> 123456789X</p>
+                    <p><strong>Important:</strong> Please include your name in the payment reference</p>
+                    <p><strong>Order will only be confirmed after payment is received</strong></p>
+                </div>
+
+                <form id="orderFormElement">
+                    <div class="form-group">
+                        <label>Your Name *</label>
+                        <input type="text" id="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Number *</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chocolate Chip Cookies</label>
+                        <div style="display: grid; gap: 10px;">
+                            <label style="font-weight: normal;">
+                                <input type="number" id="chocochip100" min="0" value="0" style="width: 80px; display: inline-block; margin-right: 10px;">
+                                100g packs ($5.50 each)
+                            </label>
+                            <label style="font-weight: normal;">
+                                <input type="number" id="chocochip200" min="0" value="0" style="width: 80px; display: inline-block; margin-right: 10px;">
+                                200g packs ($10 each)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Snickerdoodles</label>
+                        <div style="display: grid; gap: 10px;">
+                            <label style="font-weight: normal;">
+                                <input type="number" id="snickerdoodles2" min="0" value="0" style="width: 80px; display: inline-block; margin-right: 10px;">
+                                2-cookie packs ($3.50 each)
+                            </label>
+                            <label style="font-weight: normal;">
+                                <input type="number" id="snickerdoodles6" min="0" value="0" style="width: 80px; display: inline-block; margin-right: 10px;">
+                                6-cookie packs ($9.50 each)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Preferred Pickup Time on Saturday</label>
+                        <select id="pickupTime">
+                            <option>Morning (9am - 12pm)</option>
+                            <option>Afternoon (12pm - 3pm)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>PayNow Reference Number *</label>
+                        <input type="text" id="paynowRef" required placeholder="Enter the reference number from your PayNow payment">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Special Requests or Notes</label>
+                        <textarea id="notes" rows="3" placeholder="Any allergies, dietary requirements, or special instructions?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <h3 style="text-align: center; color: #8b4513;">Total: $<span id="total">0</span></h3>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit Preorder</button>
+                </form>
+            </div>
+
+            <div id="confirmationScreen" class="confirmation-screen hidden">
+                <h2>✅ Preorder Submitted!</h2>
+                <p>Your preorder has been received and is pending payment confirmation.</p>
+                <p>You will receive an email confirmation once payment is verified.</p>
+                <p><strong>Order Reference:</strong> <span id="orderRef"></span></p>
+                <button onclick="resetForm()" class="submit-btn" style="max-width: 200px; margin-top: 20px;">Place Another Order</button>
+            </div>
+        </section>
+
+        <footer>
+            <p>© 2025 The Baking Book | Made with ❤️ and flour</p>
+        </footer>
+    </div>
+
+    <script>
+        // =============================================
+        // PREORDER STATUS CONTROL
+        // Change this value to true to open preorders
+        // Change this value to false to close preorders
+        // =============================================
+        const preordersOpen = false;
+        // =============================================
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const statusBanner = document.getElementById('statusBanner');
+            const closedMsg = document.getElementById('closedMessage');
+            const orderForm = document.getElementById('orderForm');
+            const orderFormElement = document.getElementById('orderFormElement');
+            const confirmationScreen = document.getElementById('confirmationScreen');
+            
+            // Quantity inputs
+            const chocochip100 = document.getElementById('chocochip100');
+            const chocochip200 = document.getElementById('chocochip200');
+            const snickerdoodles2 = document.getElementById('snickerdoodles2');
+            const snickerdoodles6 = document.getElementById('snickerdoodles6');
+            
+            // Set initial state based on preordersOpen variable
+            if (preordersOpen) {
+                statusBanner.textContent = 'Preorders are OPEN!';
+                statusBanner.classList.remove('closed');
+                statusBanner.classList.add('open');
+                closedMsg.classList.add('hidden');
+                orderForm.classList.remove('hidden');
+            } else {
+                statusBanner.textContent = 'Preorders are currently closed';
+                statusBanner.classList.remove('open');
+                statusBanner.classList.add('closed');
+                closedMsg.classList.remove('hidden');
+                orderForm.classList.add('hidden');
+            }
+            
+            // Add event listeners for quantity inputs
+            chocochip100.addEventListener('input', calculateTotal);
+            chocochip200.addEventListener('input', calculateTotal);
+            snickerdoodles2.addEventListener('input', calculateTotal);
+            snickerdoodles6.addEventListener('input', calculateTotal);
+            
+            // Add event listener for form submission
+            orderFormElement.addEventListener('submit', handleSubmit);
+            
+            function calculateTotal() {
+                const chocochip100Val = parseInt(chocochip100.value) || 0;
+                const chocochip200Val = parseInt(chocochip200.value) || 0;
+                const snickerdoodles2Val = parseInt(snickerdoodles2.value) || 0;
+                const snickerdoodles6Val = parseInt(snickerdoodles6.value) || 0;
+                
+                const total = (chocochip100Val * 5.50) + (chocochip200Val * 10) + 
+                             (snickerdoodles2Val * 3.50) + (snickerdoodles6Val * 9.50);
+                document.getElementById('total').textContent = total.toFixed(2);
+            }
+            
+            function handleSubmit(e) {
+                e.preventDefault();
+                
+                const chocochip100Val = parseInt(chocochip100.value) || 0;
+                const chocochip200Val = parseInt(chocochip200.value) || 0;
+                const snickerdoodles2Val = parseInt(snickerdoodles2.value) || 0;
+                const snickerdoodles6Val = parseInt(snickerdoodles6.value) || 0;
+                
+                if (chocochip100Val === 0 && chocochip200Val === 0 && 
+                    snickerdoodles2Val === 0 && snickerdoodles6Val === 0) {
+                    alert('Please order at least one item!');
+                    return;
+                }
+                
+                // Generate order reference
+                const orderRef = 'BB' + Date.now().toString().slice(-6);
+                
+                const orderDetails = {
+                    orderRef: orderRef,
+                    name: document.getElementById('name').value,
+                    phone: document.getElementById('phone').value,
+                    email: document.getElementById('email').value,
+                    chocochip100g: chocochip100Val,
+                    chocochip200g: chocochip200Val,
+                    snickerdoodles2pc: snickerdoodles2Val,
+                    snickerdoodles6pc: snickerdoodles6Val,
+                    pickupTime: document.getElementById('pickupTime').value,
+                    paynowRef: document.getElementById('paynowRef').value,
+                    notes: document.getElementById('notes').value,
+                    total: ((chocochip100Val * 5.50) + (chocochip200Val * 10) + 
+                           (snickerdoodles2Val * 3.50) + (snickerdoodles6Val * 9.50)).toFixed(2),
+                    orderDate: new Date().toLocaleString(),
+                    status: 'Pending Payment Verification'
+                };
+                
+                // Display order summary for customer
+                let summary = `📋 PREORDER RECEIVED - PENDING PAYMENT\n\n`;
+                summary += `Order Reference: ${orderDetails.orderRef}\n`;
+                summary += `Customer: ${orderDetails.name}\n`;
+                summary += `Phone: ${orderDetails.phone}\n`;
+                summary += `Email: ${orderDetails.email}\n`;
+                summary += `\nOrder:\n`;
+                if (orderDetails.chocochip100g > 0) summary += `- Chocolate Chip 100g: ${orderDetails.chocochip100g} pack(s)\n`;
+                if (orderDetails.chocochip200g > 0) summary += `- Chocolate Chip 200g: ${orderDetails.chocochip200g} pack(s)\n`;
+                if (orderDetails.snickerdoodles2pc > 0) summary += `- Snickerdoodles 2pc: ${orderDetails.snickerdoodles2pc} pack(s)\n`;
+                if (orderDetails.snickerdoodles6pc > 0) summary += `- Snickerdoodles 6pc: ${orderDetails.snickerdoodles6pc} pack(s)\n`;
+                summary += `\nPickup: Saturday ${orderDetails.pickupTime}\n`;
+                summary += `PayNow Reference: ${orderDetails.paynowRef}\n`;
+                if (orderDetails.notes) summary += `Notes: ${orderDetails.notes}\n`;
+                summary += `\nTotal: $${orderDetails.total}\n\n`;
+                summary += `Status: ${orderDetails.status}\n\n`;
+                summary += `Your order will be confirmed once payment is verified.`;
+                
+                alert(summary);
+                
+                // Save order to localStorage (for admin viewing)
+                saveOrderToStorage(orderDetails);
+                
+                // Show confirmation screen
+                orderForm.classList.add('hidden');
+                document.getElementById('orderRef').textContent = orderDetails.orderRef;
+                confirmationScreen.classList.remove('hidden');
+            }
+            
+            function saveOrderToStorage(orderDetails) {
+                // Get existing orders from localStorage
+                let orders = JSON.parse(localStorage.getItem('bakingBookOrders') || '[]');
+                
+                // Add new order
+                orders.push(orderDetails);
+                
+                // Save back to localStorage
+                localStorage.setItem('bakingBookOrders', JSON.stringify(orders));
+                
+                console.log('Order saved to localStorage. Total orders:', orders.length);
+            }
+            
+            window.resetForm = function() {
+                confirmationScreen.classList.add('hidden');
+                orderForm.classList.remove('hidden');
+                orderFormElement.reset();
+                calculateTotal();
+            }
+        });
+    </script>
+</body>
+</html>
