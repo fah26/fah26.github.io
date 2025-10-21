@@ -420,68 +420,81 @@
             }
             
             function handleSubmit(e) {
-                e.preventDefault();
-                
-                const chocochip100Val = parseInt(chocochip100.value) || 0;
-                const chocochip200Val = parseInt(chocochip200.value) || 0;
-                const snickerdoodles2Val = parseInt(snickerdoodles2.value) || 0;
-                const snickerdoodles6Val = parseInt(snickerdoodles6.value) || 0;
-                
-                if (chocochip100Val === 0 && chocochip200Val === 0 && 
-                    snickerdoodles2Val === 0 && snickerdoodles6Val === 0) {
-                    alert('Please order at least one item!');
-                    return;
-                }
-                
-                // Generate order reference
-                const orderRef = 'BB' + Date.now().toString().slice(-6);
-                
-                const orderDetails = {
-                    orderRef: orderRef,
-                    name: document.getElementById('name').value,
-                    phone: document.getElementById('phone').value,
-                    email: document.getElementById('email').value,
-                    chocochip100g: chocochip100Val,
-                    chocochip200g: chocochip200Val,
-                    snickerdoodles2pc: snickerdoodles2Val,
-                    snickerdoodles6pc: snickerdoodles6Val,
-                    pickupTime: document.getElementById('pickupTime').value,
-                    paynowRef: document.getElementById('paynowRef').value,
-                    notes: document.getElementById('notes').value,
-                    total: ((chocochip100Val * 5.50) + (chocochip200Val * 10) + 
-                           (snickerdoodles2Val * 3.50) + (snickerdoodles6Val * 9.50)).toFixed(2),
-                    orderDate: new Date().toLocaleString(),
-                    status: 'Pending Payment Verification'
-                };
-                
-                // Display order summary for customer
-                let summary = `📋 PREORDER RECEIVED - PENDING PAYMENT\n\n`;
-                summary += `Order Reference: ${orderDetails.orderRef}\n`;
-                summary += `Customer: ${orderDetails.name}\n`;
-                summary += `Phone: ${orderDetails.phone}\n`;
-                summary += `Email: ${orderDetails.email}\n`;
-                summary += `\nOrder:\n`;
-                if (orderDetails.chocochip100g > 0) summary += `- Chocolate Chip 100g: ${orderDetails.chocochip100g} pack(s)\n`;
-                if (orderDetails.chocochip200g > 0) summary += `- Chocolate Chip 200g: ${orderDetails.chocochip200g} pack(s)\n`;
-                if (orderDetails.snickerdoodles2pc > 0) summary += `- Snickerdoodles 2pc: ${orderDetails.snickerdoodles2pc} pack(s)\n`;
-                if (orderDetails.snickerdoodles6pc > 0) summary += `- Snickerdoodles 6pc: ${orderDetails.snickerdoodles6pc} pack(s)\n`;
-                summary += `\nPickup: Saturday ${orderDetails.pickupTime}\n`;
-                summary += `PayNow Reference: ${orderDetails.paynowRef}\n`;
-                if (orderDetails.notes) summary += `Notes: ${orderDetails.notes}\n`;
-                summary += `\nTotal: $${orderDetails.total}\n\n`;
-                summary += `Status: ${orderDetails.status}\n\n`;
-                summary += `Your order will be confirmed once payment is verified.`;
-                
-                alert(summary);
-                
-                // Save order to localStorage (for admin viewing)
-                saveOrderToStorage(orderDetails);
-                
-                // Show confirmation screen
-                orderForm.classList.add('hidden');
-                document.getElementById('orderRef').textContent = orderDetails.orderRef;
-                confirmationScreen.classList.remove('hidden');
-            }
+    e.preventDefault();
+    
+    const chocochip100Val = parseInt(chocochip100.value) || 0;
+    const chocochip200Val = parseInt(chocochip200.value) || 0;
+    const snickerdoodles2Val = parseInt(snickerdoodles2.value) || 0;
+    const snickerdoodles6Val = parseInt(snickerdoodles6.value) || 0;
+    
+    if (chocochip100Val === 0 && chocochip200Val === 0 && 
+        snickerdoodles2Val === 0 && snickerdoodles6Val === 0) {
+        alert('Please order at least one item!');
+        return;
+    }
+    
+    // Generate order reference
+    const orderRef = 'BB' + Date.now().toString().slice(-6);
+    
+    const orderDetails = {
+        orderRef: orderRef,
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        email: document.getElementById('email').value,
+        chocochip100g: chocochip100Val,
+        chocochip200g: chocochip200Val,
+        snickerdoodles2pc: snickerdoodles2Val,
+        snickerdoodles6pc: snickerdoodles6Val,
+        pickupTime: document.getElementById('pickupTime').value,
+        paynowRef: document.getElementById('paynowRef').value,
+        notes: document.getElementById('notes').value,
+        total: ((chocochip100Val * 5.50) + (chocochip200Val * 10) + 
+               (snickerdoodles2Val * 3.50) + (snickerdoodles6Val * 9.50)).toFixed(2),
+        orderDate: new Date().toLocaleString(),
+        status: 'Pending Payment Verification'
+    };
+    
+    // Send email to yourself
+    sendOrderEmail(orderDetails);
+    
+    // Save order to localStorage
+    saveOrderToStorage(orderDetails);
+    
+    // Show confirmation screen
+    orderForm.classList.add('hidden');
+    document.getElementById('orderRef').textContent = orderDetails.orderRef;
+    confirmationScreen.classList.remove('hidden');
+}
+
+function sendOrderEmail(orderDetails) {
+    const yourEmail = 'faheemah02@gmail.com'; // CHANGE THIS TO YOUR EMAIL
+    const subject = `New Order - ${orderDetails.orderRef} - ${orderDetails.name}`;
+    
+    let body = `NEW ORDER RECEIVED\n\n`;
+    body += `Order Reference: ${orderDetails.orderRef}\n`;
+    body += `Date: ${orderDetails.orderDate}\n\n`;
+    body += `CUSTOMER DETAILS:\n`;
+    body += `Name: ${orderDetails.name}\n`;
+    body += `Phone: ${orderDetails.phone}\n`;
+    body += `Email: ${orderDetails.email}\n\n`;
+    body += `ORDER DETAILS:\n`;
+    if (orderDetails.chocochip100g > 0) body += `- Chocolate Chip 100g: ${orderDetails.chocochip100g} pack(s) = $${(orderDetails.chocochip100g * 5.50).toFixed(2)}\n`;
+    if (orderDetails.chocochip200g > 0) body += `- Chocolate Chip 200g: ${orderDetails.chocochip200g} pack(s) = $${(orderDetails.chocochip200g * 10).toFixed(2)}\n`;
+    if (orderDetails.snickerdoodles2pc > 0) body += `- Snickerdoodles 2pc: ${orderDetails.snickerdoodles2pc} pack(s) = $${(orderDetails.snickerdoodles2pc * 3.50).toFixed(2)}\n`;
+    if (orderDetails.snickerdoodles6pc > 0) body += `- Snickerdoodles 6pc: ${orderDetails.snickerdoodles6pc} pack(s) = $${(orderDetails.snickerdoodles6pc * 9.50).toFixed(2)}\n`;
+    body += `\nPICKUP: Saturday ${orderDetails.pickupTime}\n`;
+    body += `PayNow Reference: ${orderDetails.paynowRef}\n`;
+    body += `Total Amount: $${orderDetails.total}\n`;
+    if (orderDetails.notes) body += `Notes: ${orderDetails.notes}\n`;
+    body += `\nStatus: ${orderDetails.status}\n`;
+    body += `ACTION REQUIRED: Verify PayNow payment with reference: ${orderDetails.paynowRef}`;
+    
+    // Create mailto link
+    const mailtoLink = `mailto:${yourEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    
+    // Open email client
+    window.location.href = mailtoLink;
+}
             
             function saveOrderToStorage(orderDetails) {
                 // Get existing orders from localStorage
